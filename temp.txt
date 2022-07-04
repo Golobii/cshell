@@ -1,0 +1,99 @@
+int start_interactive() {
+    return -1;
+
+    FIELD *fields[3];
+    FORM *form;
+    int ch;
+
+    /* Initialize curses */
+    initscr();
+    cbreak();
+    noecho();
+    keypad(stdscr, TRUE);
+
+    char *prompt = "golobii@zeus:/home/golobii$ ";
+
+    /* Initialize the fields */
+    fields[0] = new_field(1, 10, 0, strlen(prompt), 0, 0);
+    fields[1] = NULL;
+
+    /* Set fields options */
+    field_opts_off(fields[0], O_AUTOSKIP);    /* Don't go to next fields when this */
+
+    /* Create the form and post it */
+    form = new_form(fields);
+    post_form(form);
+    refresh();
+
+    mvprintw(0, 0, "%s", prompt);
+    refresh();
+
+    char input[MAX_CHARS];
+    char command[MAX_WORDS] = {0}, *params[MAX_WORDS] = {0};
+
+    /* Loop through to get user requests */
+    while ((ch = getch()) != KEY_F(1)) {
+        switch (ch) {
+            case '\n':
+                // Or the current field buffer won't be sync with what is displayed
+                form_driver(form, REQ_NEXT_FIELD);
+                form_driver(form, REQ_PREV_FIELD);
+
+                printw("\n");
+                refresh();
+
+                strcpy(input, trimwhitespace(field_buffer(fields[0], 0)));
+
+                parse(input, params);
+
+                int code = execute(params);
+                if (code == -2) continue;
+                else if (code == -1) break;
+
+                // Cleanup
+                memset(command, 0, sizeof(command));
+                refresh();
+                pos_form_cursor(form);
+                break;
+
+
+            case KEY_UP:
+                break;
+
+            case KEY_LEFT:
+                form_driver(form, REQ_PREV_CHAR);
+                break;
+
+            case KEY_RIGHT:
+                form_driver(form, REQ_NEXT_CHAR);
+                break;
+
+                // Delete the char before cursor
+            case KEY_BACKSPACE:
+            case 127:
+                form_driver(form, REQ_DEL_PREV);
+                break;
+
+                // Delete the char under the cursor
+            case KEY_DC:
+                form_driver(form, REQ_DEL_CHAR);
+                break;
+
+            default:
+                form_driver(form, ch);
+                break;
+        }
+
+        refresh();
+    }
+
+    /* Un post form and free the memory */
+    unpost_form(form);
+    free_form(form);
+    free_field(fields[0]);
+    free_field(fields[1]);
+
+    endwin();
+
+    return 0;
+}
