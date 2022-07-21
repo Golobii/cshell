@@ -106,24 +106,7 @@ int execute(char *params[]) {
 int run(char *params[]) {
     bool first = true;
 
-    u_int pipenum = 0, pipeindex = 0;
-
-    for (unsigned int i = 0; params[i] != NULL; i++)
-        if (strcmp(params[i], "|") == 0) pipenum++;
-
-    int fd[pipenum][2];
-
-    for (u_int i = 0; i < pipenum; i++) {
-        if (pipe(fd[i]) < 0) {
-            // TODO: better error handling
-            puts("Pipie creation failed\n");
-            return -1;
-        }
-    }
-
     for (unsigned int i = 0; params[i] != NULL; i++) {
-        bool piping = false;
-
         char *execParams[MAX_WORDS] = {0};
         u_int index = 0;
         if (!first) i++;
@@ -132,33 +115,17 @@ int run(char *params[]) {
         for (; params[i] != NULL; i++) {
             if (strcmp(params[i], "&&") == 0) break;
             if (strcmp(params[i], "|") == 0) {
-                piping = true;
                 break;
             }
             execParams[index++] = params[i];
         }
         i--;
 
-        if (!piping)
-            close(fd[0][1]);
-
         // execution
         pid_t id = fork();
         int status;
 
         if (id == 0) {
-            if (pipeindex == 0) {
-                close(fd[0][0]);
-                dup2(fd[0][1], STDOUT_FILENO);
-                close(fd[0][1]);
-            }
-
-            if (pipeindex == 1) {
-                close(fd[0][1]);
-                dup2(fd[0][0], STDIN_FILENO);
-                close(fd[0][0]);
-            }
-
 
             int code = execvp(execParams[0], execParams);
 
@@ -171,7 +138,6 @@ int run(char *params[]) {
         }
 
         waitpid(id, &status, 0);
-        pipeindex++;
 
     }
 

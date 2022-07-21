@@ -59,13 +59,20 @@ int main(int argc, char **argv) {
 
     if (strcmp(arguments.command, "") != 0) {
         parse(arguments.command, params);
+        if (strcmp(params[0], "exit") == 0) {
+            puts("exit");
+            return 0;
+        } else if (execInternalCmd(params[0], params) == 0) {
+            // TODO: make this better
+        }
         run(params);
         return 0;
     }
 
+    /*
     if (is_interactive()) {
         return start_interactive();
-    }
+    }*/
 
     char running = 1;
     while (running) {
@@ -79,6 +86,7 @@ int main(int argc, char **argv) {
             puts("exit");
             break;
         } else if (execInternalCmd(params[0], params) == 0)
+            // TODO: make this better
             continue;
 
         run(params);
@@ -90,6 +98,5 @@ int main(int argc, char **argv) {
 }
 
 int start_interactive() {
-    // ource code found in "temp.txt"
     return -1;
 }
