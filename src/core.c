@@ -76,35 +76,22 @@ void parse(char *input, char *par[]) {
     }
 }
 
-/*
-int execute(char *params[]) {
-
-    pid_t id = fork();
-    int status;
-
-    pipe(fd);
-
-    if (id == 0) {
-        dup2(fd[0], STDIN_FILENO);
-        close(fd[0]);
-        close(fd[1]);
-
-        int code = execvp(params[0], params);
-
-        if (code == -1) {
-            printf("Command not found\n");
-        }
-        exit(code);
-    }
-
-    waitpid(id, &status, 0);
-
-    return 0;
-}
-*/
-
 int run(char *params[]) {
     bool first = true;
+    u_int pipenum = 0, pipeindex = 0;
+    bool needs_piping = false;
+
+    for (u_int i = 0; params[i] != NULL; i++) {
+        if (strcmp(params[i], "|") == 0) pipenum++;
+    }
+    int fd[pipenum][2];
+
+    for (u_int i = 0; i < pipenum; i++) {
+        if (pipe(fd[i]) < 0) {
+            puts("Failed to init pipe!");
+            return -1;
+        }
+    }
 
     for (unsigned int i = 0; params[i] != NULL; i++) {
         char *execParams[MAX_WORDS] = {0};
@@ -112,9 +99,12 @@ int run(char *params[]) {
         if (!first) i++;
         else first = false;
 
+        bool piping = false;
+
         for (; params[i] != NULL; i++) {
             if (strcmp(params[i], "&&") == 0) break;
             if (strcmp(params[i], "|") == 0) {
+                piping = true;
                 break;
             }
             execParams[index++] = params[i];
@@ -125,7 +115,15 @@ int run(char *params[]) {
         pid_t id = fork();
         int status;
 
+
         if (id == 0) {
+            if (piping) {
+                dup2(fd[pipeindex][1], STDOUT_FILENO);
+            }
+
+            if (needs_piping) {
+                dup2(fd[pipeindex - 1][0], STDIN_FILENO);
+            }
 
             int code = execvp(execParams[0], execParams);
 
@@ -137,6 +135,14 @@ int run(char *params[]) {
             return code;
         }
 
+
+        if (piping) {
+            close(fd[pipeindex][1]);
+            pipeindex++;
+            needs_piping = true;
+        } else {
+            needs_piping = false;
+        }
         waitpid(id, &status, 0);
 
     }

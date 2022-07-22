@@ -18,7 +18,9 @@ void execCd(char *dest) {
 }
 
 void execHelp() {
-    printf("Imagine here being a good help section\n\n");
+    printf("Internal commands:\n"
+           "\thelp: prints this message,\n"
+           "\tcd: changes WD");
 }
 
 int execInternalCmd(char *command, char *params[]) {
