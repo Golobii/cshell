@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <argp.h>
+#include <stdlib.h>
 
 #include "core.h"
 #include "definitions.h"
@@ -38,6 +39,8 @@ int main(int argc, char **argv) {
     char running = 1;
     while (running) {
         char *input = rl_gets();
+
+        if (strcmp(input, "") == 0) continue;
 
         parse(input, params);
 
