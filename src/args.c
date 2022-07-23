@@ -6,18 +6,19 @@
 #include <argp.h>
 
 const char *argp_program_verison = "cshell 1.0";
-static char doc[] = "cshell -- a simple and practically unusable shell.";
+static char doc[] = "cshell -- a simple shell.";
 static char args_doc[] = "";
 
 static struct argp_option options[] = {
         {"command", 'c', "CMD", 0,
-                     "A command to execute.", 0},
+         "A command to execute.", 0},
         {0, 0, 0, 0, 0, 0}
 };
 
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     struct arguments *arguments = state->input;
 
+    // TODO: add -i (force interactive) and -s (read from stdin)
     switch (key) {
         case 'c':
             arguments->command = arg;

@@ -1,8 +1,6 @@
 # <span style="color:#87ceeb">CSHELL</span>
 
 A small unix shell written in C.
-This project is still heavily in development, so don't bother trying
-to use the shell.
 
 It currently supports:
 + passing parameters to commands,
