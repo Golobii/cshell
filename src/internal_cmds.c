@@ -19,6 +19,7 @@ void execCd(char *dest) {
 
 void execHelp() {
     printf("Internal commands:\n"
+           "\texit: exits the shell,\n"
            "\thelp: prints this message,\n"
            "\tcd: changes WD\n");
 }

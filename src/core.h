@@ -13,9 +13,10 @@ enum EXIT_STATUS {
     S_OK,
 };
 
-ssize_t readline(char *input);
+ssize_t my_readline(char *input);
 int init_shell();
 void parse(char *input, char *par[]);
+char *rl_gets();
 
 enum EXIT_STATUS run(char *params[]);
 

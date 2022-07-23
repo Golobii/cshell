@@ -18,7 +18,7 @@ static struct argp_option options[] = {
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     struct arguments *arguments = state->input;
 
-    // TODO: add -i (force interactive) and -s (read from stdin)
+    // TODO: add -s (read from stdin)
     switch (key) {
         case 'c':
             arguments->command = arg;

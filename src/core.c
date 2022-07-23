@@ -9,6 +9,8 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdbool.h>
+#include <readline/history.h>
+#include <readline/readline.h>
 
 #include "core.h"
 #include "definitions.h"
@@ -19,27 +21,33 @@ static char *hostname;
 void sig_handler(int sigcode) {
 }
 
-ssize_t readline(char *input) {
+/* A static variable for holding the line. */
+static char *line_read = (char *)NULL;
+
+char *rl_gets ()
+{
+    if (line_read)
+    {
+        free (line_read);
+        line_read = (char *)NULL;
+    }
+
     char cwd[MAX_CHARS];
     if (getcwd(cwd, sizeof(cwd)) == NULL) {
         printf("Couldn't get the current dir.");
-        return -1;
+        return "";
     }
 
-    printf("\n%s@%s:%s$ ", getenv("USER"), hostname, cwd);
+    char *buff = malloc(sizeof(char) * MAX_CHARS + sizeof(hostname));
+    sprintf(buff, "\n%s@%s:%s$ ", getenv("USER"), hostname, cwd);
 
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t lineSize = 0;
-    lineSize = getline(&line, &len, stdin);
+    line_read = readline(buff);
+    free(buff);
 
-    if (lineSize > MAX_CHARS) return 0;
+    if (line_read && *line_read)
+        add_history (line_read);
 
-    line[strlen(line) - 1] = 0;
-    strcpy(input, line);
-    free(line);
-
-    return lineSize;
+    return (line_read);
 }
 
 int init_shell() {
