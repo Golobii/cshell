@@ -7,6 +7,7 @@ It currently supports:
 + it has some builtin functions like: cd, exit, help,
 + it supports the `&&` operator,
 + it supports piping with the `|` operator,
++ it supports the `&` operator,
 + interactivity,
 + passing commands as an argument (```./cshell -c "echo Hello"```).
 

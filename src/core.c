@@ -108,16 +108,23 @@ enum EXIT_STATUS run(char *params[]) {
         else first = false;
 
         bool piping = false;
+        bool wait_p = true;
 
         for (; params[i] != NULL; i++) {
             if (strcmp(params[i], "&&") == 0) break;
-            if (strcmp(params[i], "|") == 0) {
+            else if (strcmp(params[i], "|") == 0) {
                 piping = true;
+                break;
+            }
+            else if (strcmp(params[i], "&") == 0) {
+                wait_p = false;
                 break;
             }
             execParams[index++] = params[i];
         }
         i--;
+
+        if (execParams[0] == NULL) return S_OK;
 
         if (strcmp(execParams[0], "exit") == 0) {
             return S_EXIT;
@@ -158,7 +165,9 @@ enum EXIT_STATUS run(char *params[]) {
         } else {
             needs_piping = false;
         }
-        waitpid(id, &status, 0);
+
+        if (wait_p)
+            waitpid(id, &status, 0);
 
     }
 
