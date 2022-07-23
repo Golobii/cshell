@@ -8,7 +8,7 @@ It currently supports:
 + passing parameters to commands,
 + it has some builtin functions like: cd, exit, help,
 + it supports the `&&` operator,
-+ it support piping with the `|` operator,
++ it supports piping with the `|` operator,
 + passing commands as an argument (```./cshell -c "echo Hello"```).
 
 I will add support for:

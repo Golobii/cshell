@@ -20,7 +20,7 @@ void execCd(char *dest) {
 void execHelp() {
     printf("Internal commands:\n"
            "\thelp: prints this message,\n"
-           "\tcd: changes WD");
+           "\tcd: changes WD\n");
 }
 
 int execInternalCmd(char *command, char *params[]) {

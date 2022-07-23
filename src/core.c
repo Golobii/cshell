@@ -76,7 +76,7 @@ void parse(char *input, char *par[]) {
     }
 }
 
-int run(char *params[]) {
+enum EXIT_STATUS run(char *params[]) {
     bool first = true;
     u_int pipenum = 0, pipeindex = 0;
     bool needs_piping = false;
@@ -111,6 +111,10 @@ int run(char *params[]) {
         }
         i--;
 
+        if (strcmp(execParams[0], "exit") == 0) {
+            return S_EXIT;
+        }
+
         // execution
         pid_t id = fork();
         int status;
@@ -125,6 +129,9 @@ int run(char *params[]) {
                 dup2(fd[pipeindex - 1][0], STDIN_FILENO);
             }
 
+            if (execInternalCmd(execParams[0], execParams) == 0)
+                exit(0);
+
             int code = execvp(execParams[0], execParams);
 
             if (code == -1) {
@@ -132,7 +139,7 @@ int run(char *params[]) {
             }
 
             // exit from child process
-            return code;
+            exit(code);
         }
 
 
@@ -147,5 +154,5 @@ int run(char *params[]) {
 
     }
 
-    return 0;
+    return S_OK;
 }

@@ -59,13 +59,16 @@ int main(int argc, char **argv) {
 
     if (strcmp(arguments.command, "") != 0) {
         parse(arguments.command, params);
-        if (strcmp(params[0], "exit") == 0) {
-            puts("exit");
-            return 0;
-        } else if (execInternalCmd(params[0], params) == 0) {
-            // TODO: make this better
+        switch (run(params)) {
+            case S_EXIT:
+                puts("exit");
+                return 0;
+            case S_ERR:
+                puts("There was an error.");
+                break;
+            case S_OK:
+                break;
         }
-        run(params);
         return 0;
     }
 
@@ -82,14 +85,16 @@ int main(int argc, char **argv) {
 
         parse(input, params);
 
-        if (strcmp(params[0], "exit") == 0) {
-            puts("exit");
-            break;
-        } else if (execInternalCmd(params[0], params) == 0)
-            // TODO: make this better
-            continue;
-
-        run(params);
+        switch (run(params)) {
+            case S_EXIT:
+                puts("exit");
+                return 0;
+            case S_ERR:
+                puts("There was an error.");
+                break;
+            case S_OK:
+                break;
+        }
 
     }
 
