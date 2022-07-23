@@ -12,5 +12,5 @@ It currently supports:
 + a history file,
 + passing commands as an argument (```./cshell -c "echo Hello"```).
 
-  I will add support for:
+I will add support for:
 + maybe some keywords (for, if, ...),
