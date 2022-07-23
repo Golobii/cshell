@@ -14,6 +14,7 @@ enum EXIT_STATUS {
 };
 
 int init_shell();
+void exit_shell();
 void parse(char *input, char *par[]);
 char *rl_gets();
 

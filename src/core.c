@@ -14,9 +14,11 @@
 
 #include "core.h"
 #include "definitions.h"
+#include "settings.h"
 #include "internal_cmds.h"
 
 static char *hostname;
+static char *histfile;
 
 void sig_handler(int sigcode) {
 }
@@ -39,7 +41,7 @@ char *rl_gets ()
     }
 
     char *buff = malloc(sizeof(char) * MAX_CHARS + sizeof(hostname));
-    sprintf(buff, "\n%s@%s:%s$ ", getenv("USER"), hostname, cwd);
+    sprintf(buff, PROMPT, getenv("USER"), hostname, cwd);
 
     line_read = readline(buff);
     free(buff);
@@ -54,6 +56,11 @@ int init_shell() {
     hostname = malloc(sizeof(char) * 20);
     gethostname(hostname, sizeof(hostname));
 
+    histfile = malloc(sizeof(char) * MAX_CHARS);
+    strcat(histfile, getenv("HOME"));
+    strcat(histfile, HISTFILE);
+    read_history(histfile);
+
     if (hostname == NULL) {
         printf("Can't get hostname.");
         return -1;
@@ -62,6 +69,14 @@ int init_shell() {
     signal(SIGINT, sig_handler);
 
     return 0;
+}
+
+void exit_shell() {
+    write_history(histfile);
+
+    free(histfile);
+    free(hostname);
+    puts("exit");
 }
 
 void parse(char *input, char *par[]) {

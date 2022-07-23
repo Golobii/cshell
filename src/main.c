@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <argp.h>
+#include <readline/history.h>
 #include <stdlib.h>
 
 #include "core.h"
@@ -23,16 +24,18 @@ int main(int argc, char **argv) {
 
     if (strcmp(arguments.command, "") != 0) {
         parse(arguments.command, params);
+        add_history(arguments.command);
         switch (run(params)) {
             case S_EXIT:
-                puts("exit");
-                return 0;
+                goto end;
             case S_ERR:
                 puts("There was an error.");
                 break;
             case S_OK:
                 break;
         }
+        end:
+        exit_shell();
         return 0;
     }
 
@@ -46,7 +49,7 @@ int main(int argc, char **argv) {
 
         switch (run(params)) {
             case S_EXIT:
-                puts("exit");
+                exit_shell();
                 return 0;
             case S_ERR:
                 puts("There was an error.");

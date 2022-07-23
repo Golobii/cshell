@@ -9,8 +9,8 @@ It currently supports:
 + it supports piping with the `|` operator,
 + it supports the `&` operator,
 + interactivity,
++ a history file,
 + passing commands as an argument (```./cshell -c "echo Hello"```).
 
   I will add support for:
-+ a history file,
 + maybe some keywords (for, if, ...),
